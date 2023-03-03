@@ -4,11 +4,22 @@
 #include "vec3.h"
 
 
+bool hit_shpere(const point3 &center, const double radius, const ray &r) {
+    vec3 oc = r.origin - center;
+    auto a = dot(r.direction, r.direction);
+    auto b = 2.0 * dot(oc, r.direction);
+    auto c = dot(oc, oc) - radius*radius;
+    auto discriminant = b*b - 4*a*c;
+    return discriminant > 0;
+}
+
 color ray_color(const ray &r) {
+    if(hit_shpere(vec3(0, 0, -1.0), 0.5, r)) {
+        return color(1, 0, 0);
+    }
     auto t = 0.5 * (r.direction.y + 1.0);
     return (1.0 - t)*color(1.0) + t*color(0.5, 0.7, 1.0);
 }
-
 
 int main(int, char**) {
     // Image
