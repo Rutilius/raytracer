@@ -5,7 +5,11 @@
 struct ray {
     public:
         ray() {}
-        ray(const point3 &origin, const vec3 &direction) : origin(origin), direction(direction) {}
+        constexpr ray(const point3 &origin, const vec3 &direction) : origin(origin), direction(direction) {
+            if(direction.length_squared() != 1.0) {
+                this->direction = normalized(direction);
+            }
+        }
 
         constexpr point3 at(const double t) const {
             return origin + t*direction;
