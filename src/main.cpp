@@ -1,7 +1,14 @@
+#include <array>
 #include <iostream>
+#include <memory>
 #include "color.h"
 #include "ray.h"
 #include "vec3.h"
+#include "memory.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb/stb_image_write.h"
+
 
 
 bool hit_shpere(const point3 &center, const double radius, const ray &r) {
@@ -22,7 +29,10 @@ color ray_color(const ray &r) {
 }
 
 int main(int, char**) {
+    const char *result_path = "result.png";
+
     // Image
+    const int channels = 3;
     const auto aspect_ratio = 16.0 / 9.0;
     const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
@@ -38,7 +48,10 @@ int main(int, char**) {
     auto lower_left_corner = origin - horizontal/2.0 - vertical/2.0 - vec3(0, 0, focal_length);
 
     // Render
-    std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+    // std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+    stbi_flip_vertically_on_write(true);
+    std::unique_ptr<char[]> img = std::make_unique<char[]>(image_width * image_height * channels);
 
     for(int j = image_height - 1; j >= 0 ; --j) {
         std::cerr << "\rScanlines remaining: " << j << std::flush;
@@ -47,9 +60,14 @@ int main(int, char**) {
             auto v = static_cast<double>(j) / (image_height - 1);
             ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
             color pixel_color = ray_color(r);
-            write_color(std::cout, pixel_color);
+
+            img[(j * image_width * channels) + i*channels    ] = static_cast<char>(255.999 * pixel_color.x);
+            img[(j * image_width * channels) + i*channels + 1] = static_cast<char>(255.999 * pixel_color.y);
+            img[(j * image_width * channels) + i*channels + 2] = static_cast<char>(255.999 * pixel_color.z);
         }
     }
 
+    stbi_write_png(result_path, image_width, image_height, channels, img.get(), image_width * channels);
+    
     std::cerr << "\nDone!\n";
 }
