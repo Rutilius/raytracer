@@ -71,7 +71,7 @@ using color = vec3;
 // vec3 Utilities Functions
 
 inline constexpr std::ostream& operator << (std::ostream &out, const vec3 &v) {
-    return out << v.x << ' ' << v.y << ' ' << v.z;
+    return out << '(' << v.x << ", " << v.y << ", " << v.z << ')';
 }
 
 inline constexpr vec3 operator + (const vec3 &v1, const vec3 &v2) {
