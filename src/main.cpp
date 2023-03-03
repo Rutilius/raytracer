@@ -1,10 +1,8 @@
-#include <array>
 #include <iostream>
 #include <memory>
 #include "color.h"
 #include "ray.h"
 #include "vec3.h"
-#include "memory.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
