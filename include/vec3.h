@@ -11,8 +11,8 @@ using std::sqrt;
 
 struct vec3 {
     public:
-        constexpr vec3() { x = 0; y = 0; z = 0; }
-        constexpr vec3(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+        constexpr vec3() : x(0), y(0), z(0)  { }
+        constexpr vec3(double x, double y, double z) : x(x), y(y), z(z) { }
 
         constexpr vec3 operator - () const { return vec3(-x, -y, -z); }
 
