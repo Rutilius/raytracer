@@ -1,18 +1,15 @@
 #pragma once
 
-#include <cassert>
 #include <cmath>
 #include <iostream>
-#include <ostream>
-#include <stdexcept>
-#include <format>
 
 using std::sqrt;
 
 struct vec3 {
     public:
         constexpr vec3() : x(0), y(0), z(0)  { }
-        constexpr vec3(double x, double y, double z) : x(x), y(y), z(z) { }
+        constexpr vec3(const double all) : x(all), y(all), z(all)  { }
+        constexpr vec3(const double x, const double y, const double z) : x(x), y(y), z(z) { }
 
         constexpr vec3 operator - () const { return vec3(-x, -y, -z); }
 
