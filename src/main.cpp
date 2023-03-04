@@ -46,13 +46,11 @@ int main(int, char**) {
     auto lower_left_corner = origin - horizontal/2.0 - vertical/2.0 - vec3(0, 0, focal_length);
 
     // Render
-    // std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
     stbi_flip_vertically_on_write(true);
     std::unique_ptr<char[]> img = std::make_unique<char[]>(image_width * image_height * channels);
 
     for(int j = image_height - 1; j >= 0 ; --j) {
-        std::cerr << "\rScanlines remaining: " << j << std::flush;
+        std::cout << "\rScanlines remaining: " << j << std::flush;
         for (int i = 0; i < image_width; ++i) {
             auto u = static_cast<double>(i) / (image_width - 1);
             auto v = static_cast<double>(j) / (image_height - 1);
@@ -67,5 +65,5 @@ int main(int, char**) {
 
     stbi_write_png(result_path, image_width, image_height, channels, img.get(), image_width * channels);
     
-    std::cerr << "\nDone!\n";
+    std::cout << "\nDone!\n";
 }
