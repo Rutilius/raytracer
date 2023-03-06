@@ -12,6 +12,7 @@
 // Constants
 constexpr double infinity = std::numeric_limits<double>::infinity();
 constexpr double pi = 3.1415926535897932385;
+constexpr double tao = 2.0 * pi;
 
 // Utility Functions
 constexpr double degree_to_radians(double degrees) {
@@ -33,20 +34,16 @@ inline double clamp(double x, double min, double max) {
 }
 
 inline vec3 random_in_unit_sphere() {
-    
-    double x = sin(random_double(0.0, pi));
-    double y = sin(random_double(0.0, pi));
-    double z = sin(random_double(0.0, pi));
-
-    double m = random_double(0.0, 1.0);
-
-    return vec3(x, y, z) * m;
-    
-    /*
     while (true) {
         auto p = vec3(random_double(-1, 1), random_double(-1, 1), random_double(-1, 1));
         if (p.length_squared() >= 1) continue;
-        return p;
+        return normalized(p);
     }
-    */
+
+    // return vec3(cos(random_double(0.0, tao)), cos(random_double(0.0, tao)), cos(random_double(0.0, tao)));
+}
+
+inline vec3 random_in_hemisphere(vec3 &normal) {
+    vec3 in_unit_sphere = random_in_unit_sphere();
+    return dot(in_unit_sphere, normal) > 0.0 ? in_unit_sphere : -in_unit_sphere;
 }
