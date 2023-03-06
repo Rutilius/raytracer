@@ -33,6 +33,7 @@ inline double clamp(double x, double min, double max) {
 }
 
 inline vec3 random_in_unit_sphere() {
+    
     double x = sin(random_double(0.0, pi));
     double y = sin(random_double(0.0, pi));
     double z = sin(random_double(0.0, pi));
@@ -40,4 +41,12 @@ inline vec3 random_in_unit_sphere() {
     double m = random_double(0.0, 1.0);
 
     return vec3(x, y, z) * m;
+    
+    /*
+    while (true) {
+        auto p = vec3(random_double(-1, 1), random_double(-1, 1), random_double(-1, 1));
+        if (p.length_squared() >= 1) continue;
+        return p;
+    }
+    */
 }
