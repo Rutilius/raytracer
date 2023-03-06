@@ -34,13 +34,15 @@ inline double clamp(double x, double min, double max) {
 }
 
 inline vec3 random_in_unit_sphere() {
+    /*
     while (true) {
         auto p = vec3(random_double(-1, 1), random_double(-1, 1), random_double(-1, 1));
         if (p.length_squared() >= 1) continue;
         return normalized(p);
     }
+    */
 
-    // return vec3(cos(random_double(0.0, tao)), cos(random_double(0.0, tao)), cos(random_double(0.0, tao)));
+    return vec3(cos(random_double(0.0, tao)), cos(random_double(0.0, tao)), cos(random_double(0.0, tao)));
 }
 
 inline vec3 random_in_hemisphere(vec3 &normal) {
