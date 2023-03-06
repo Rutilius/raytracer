@@ -37,7 +37,7 @@ struct vec3 {
         constexpr vec3& operator += (const vec3 &v) {
             x += v.x;
             y += v.y;
-            y += v.z;
+            z += v.z;
             return *this;
         }
 
