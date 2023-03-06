@@ -5,6 +5,10 @@
 #include <limits>
 #include <memory>
 
+// Common Headers
+#include "ray.h"
+#include "vec3.h"
+
 // Constants
 constexpr double infinity = std::numeric_limits<double>::infinity();
 constexpr double pi = 3.1415926535897932385;
@@ -28,6 +32,12 @@ inline double clamp(double x, double min, double max) {
     return x; 
 }
 
-// Common Headers
-#include "ray.h"
-#include "vec3.h"
+inline vec3 random_in_unit_sphere() {
+    double x = sin(random_double(0.0, pi));
+    double y = sin(random_double(0.0, pi));
+    double z = sin(random_double(0.0, pi));
+
+    double m = random_double(0.0, 1.0);
+
+    return vec3(x, y, z) * m;
+}
