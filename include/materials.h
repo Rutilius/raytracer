@@ -58,7 +58,7 @@ class dielectric : public material {
             attenuation = color(1.0);
             double refraction_ratio = rec.is_front_face ? (1.0 / ir) : ir;
 
-            const double cos_theta = fmin(dot(r_in.direction, rec.normal), 1.0);
+            const double cos_theta = fmin(dot(-r_in.direction, rec.normal), 1.0);
             const double sin_theta = sqrt(1.0 - cos_theta*cos_theta);
 
             const bool cannot_refract = refraction_ratio * sin_theta > 1.0;
