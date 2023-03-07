@@ -75,7 +75,7 @@ class dielectric : public material {
         }
     
     private: 
-        static double reflectance(double cosine, double ref_idx) {
+        constexpr static double reflectance(const double cosine, const double ref_idx) {
             // Use Schlick's approximation for reflectance.
             auto r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
             r0 = r0*r0;
