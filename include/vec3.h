@@ -59,6 +59,12 @@ struct vec3 {
         constexpr double length_squared() const {
             return x*x + y*y + z*z;
         }
+
+        constexpr bool is_near_zero() const {
+            // Return true if the vector is close to zero in all dimensions.    
+            const auto eps = 1e-8;
+            return fabs(x) < eps && fabs(y) < eps && fabs(z) < eps;
+        }
     
     public:
         double x;
@@ -111,4 +117,8 @@ inline constexpr vec3 cross(const vec3 &v1, const vec3 &v2) {
 
 inline constexpr vec3 normalized(const vec3 &v) {
     return v / v.length();
+}
+
+inline constexpr vec3 reflect(const vec3 &v, const vec3 &n) {
+    return v - 2.0*dot(v, n)*n;
 }

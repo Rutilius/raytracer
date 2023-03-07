@@ -45,7 +45,7 @@ inline vec3 random_in_unit_sphere() {
     return vec3(cos(random_double(0.0, tao)), cos(random_double(0.0, tao)), cos(random_double(0.0, tao)));
 }
 
-inline vec3 random_in_hemisphere(vec3 &normal) {
+inline vec3 random_in_hemisphere(const vec3 &normal) {
     vec3 in_unit_sphere = random_in_unit_sphere();
     return dot(in_unit_sphere, normal) > 0.0 ? in_unit_sphere : -in_unit_sphere;
 }
