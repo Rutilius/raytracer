@@ -3,6 +3,7 @@
 #include "rtweekend.h"
 #include "material.h"
 #include "hittable.h"
+#include <cmath>
 
 
 class lambertian : public material {
@@ -57,9 +58,19 @@ class dielectric : public material {
             attenuation = color(1.0);
             double refraction_ratio = rec.is_front_face ? (1.0 / ir) : ir;
 
-            auto refracted = refract(r_in.direction, rec.normal, refraction_ratio);
-            scattered = ray(rec.p, refracted);
-            
+            const double cos_theta = fmin(dot(r_in.direction, rec.normal), 1.0);
+            const double sin_theta = sqrt(1.0 - cos_theta*cos_theta);
+
+            const bool cannot_refract = refraction_ratio * sin_theta > 1.0;
+            vec3 direction;
+
+            if(cannot_refract) {
+                direction = reflect(r_in.direction, rec.normal);
+            } else {
+                direction = refract(r_in.direction, rec.normal, refraction_ratio);
+            }
+
+            scattered = ray(rec.p, direction);
             return true;
         }
         
