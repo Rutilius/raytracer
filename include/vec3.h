@@ -122,3 +122,10 @@ inline constexpr vec3 normalized(const vec3 &v) {
 inline constexpr vec3 reflect(const vec3 &v, const vec3 &n) {
     return v - 2.0*dot(v, n)*n;
 }
+
+inline constexpr vec3 refract(const vec3 &uv, const vec3 &n, const double etai_over_etat) {
+    const auto cos_theta = fmin(dot(-uv, n), 1.0);
+    const auto r_out_perpendicular = etai_over_etat * (uv + cos_theta*n);
+    const auto r_out_parallel = -sqrt(fabs(1.0 - r_out_perpendicular.length_squared())) * n;
+    return r_out_perpendicular + r_out_parallel;
+}

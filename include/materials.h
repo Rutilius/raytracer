@@ -1,8 +1,9 @@
 #pragma once
 
-#import "material.h"
 #include "rtweekend.h"
-#import "hittable.h"
+#include "material.h"
+#include "hittable.h"
+
 
 class lambertian : public material {
     public:
@@ -45,4 +46,23 @@ class metal : public material {
     public:
         color albedo;
         double fuzz;
+};
+
+class dielectric : public material {
+    public: 
+        dielectric(const double index_of_refraction) : ir(index_of_refraction) { }
+        virtual ~dielectric() = default;
+
+        virtual bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const override {
+            attenuation = color(1.0);
+            double refraction_ratio = rec.is_front_face ? (1.0 / ir) : ir;
+
+            auto refracted = refract(r_in.direction, rec.normal, refraction_ratio);
+            scattered = ray(rec.p, refracted);
+            
+            return true;
+        }
+        
+    public:
+        double ir; // Index of Refraction
 };
