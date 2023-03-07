@@ -33,6 +33,14 @@ inline double clamp(double x, double min, double max) {
     return x; 
 }
 
+inline vec3 random_vec3() {
+    return vec3(random_double(), random_double(), random_double());
+}
+
+inline static vec3 random_vec3(double min, double max) {
+    return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+}
+
 inline vec3 random_in_unit_sphere() {
     /*
     while (true) {
