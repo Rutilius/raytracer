@@ -45,6 +45,18 @@ inline vec3 random_in_unit_sphere() {
     return vec3(cos(random_double(0.0, tao)), cos(random_double(0.0, tao)), cos(random_double(0.0, tao)));
 }
 
+inline vec3 random_in_unit_disk_full() {
+    /*
+    while (true) {
+        auto p = vec3(random_double(-1,1), random_double(-1,1), 0);
+        if (p.length_squared() >= 1) continue;
+        return p;
+    }
+    */
+
+    return vec3(cos(random_double(0.0, tao)), sin(random_double(0.0, tao)), 0.0) * random_double();
+}
+
 inline vec3 random_in_hemisphere(const vec3 &normal) {
     vec3 in_unit_sphere = random_in_unit_sphere();
     return dot(in_unit_sphere, normal) > 0.0 ? in_unit_sphere : -in_unit_sphere;
