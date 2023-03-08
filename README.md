@@ -1,9 +1,34 @@
 # Raytracer
 
-Ray Tracer made following the Peter Shirley: Ray Tracing in one weekend book series [[1]](#1)
+Ray Tracer made following the Peter Shirley: Ray Tracing in one weekend book series [[1]](#1).
 
-My personal documented process of the first book [[2]](#2) of the series
+## Build
 
+To build this repository you need to have installed CMake and clang++, For a debug build execute the command lines:  
+
+```cmd
+cmake --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE:STRING=Debug -S . -B build -G "Unix Makefiles"
+cmake --build build --config Debug --target all -j 6 --
+```
+
+This line will produce an executable at the relative path "./.package/debug/bin/Raytracer"
+
+For a release build execute the command lines:  
+
+```cmd
+cmake --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE:STRING=Release -S . -B build -G "Unix Makefiles"
+cmake --build build --config Release --target all -j 6 --
+```
+
+This line will produce an executable at the relative path "./.package/release/bin/Raytracer"
+
+If needed use `-DCMAKE_C_COMPILER:FILEPATH=[Path to clang] -DCMAKE_CXX_COMPILER:FILEPATH=[Path to clang++]` in the first command of the debug and release preparation to add the compilers path to cmake build project
+
+## Project
+
+The following section are my personal documented process of the project made following the books series.
+
+### First book [[2]](#2)
 <!-- markdownlint-disable html -->
 <table cellspacing="0" cellpadding="0">
   <tr>
