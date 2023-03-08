@@ -24,6 +24,8 @@ This line will produce an executable at the relative path "./.package/release/bi
 
 If needed use `-DCMAKE_C_COMPILER:FILEPATH=[Path to clang] -DCMAKE_CXX_COMPILER:FILEPATH=[Path to clang++]` in the first command of the debug and release preparation to add the compilers path to cmake build project
 
+Executing the program will generate an image named "result.png" in the same path of the executable call.
+
 ## Project
 
 The following section are my personal documented process of the project made following the books series.
