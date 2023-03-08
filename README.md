@@ -5,12 +5,7 @@ Ray Tracer made following the Peter Shirley: Ray Tracing in one weekend book ser
 My personal documented process of the first book [[2]](#2) of the series
 
 <!-- markdownlint-disable html -->
-<table cellspacing="0" cellpadding="0">
-    <style type="text/css">
-        //td, tr, img  { padding: 0px; margin: 0px; border: none; }
-        table { border-collapse: collapse; table-layout: fixed; width: 100%; }
-        figcaption { font-size: 0.7em; }
-    </style>
+<table cellspacing="0" cellpadding="0" style="border-collapse: collapse; table-layout: fixed; width: 100%; font-size: 0.7em;">
   <tr>
     <td rowspan="2">
         <img src="./renders/Ray Tracing in One Weekend/0_image.png"/>
