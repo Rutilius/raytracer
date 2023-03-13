@@ -4,7 +4,9 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <iterator>
 #include <functional>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -88,16 +90,23 @@ hittable_list random_scene() {
 }
 
 struct render_data {
-    uint width;
-    uint height;
+    unsigned int width;
+    unsigned int height;
 
-    uint sample_per_pixel;
-    uint max_depth;
+    unsigned int sample_per_pixel;
+    unsigned int max_depth;
 
     camera cam;
     hittable_list world;
 
-    render_data(const uint width, const uint height, const uint sample_per_pixel, const uint max_depth, const camera &camera, const hittable_list &world) : 
+    render_data(
+                const unsigned int width,
+                const unsigned int height,
+                const unsigned int sample_per_pixel, 
+                const unsigned int max_depth, 
+                const camera &camera, 
+                const hittable_list &world
+            ) : 
         width(width),
         height(height),
         sample_per_pixel(sample_per_pixel),
@@ -114,7 +123,7 @@ struct render_chunk {
     int start_y;
     int end_y;
 
-    render_chunk(uint start_x, uint end_x, uint start_y, uint end_y) : start_x(start_x), end_x(end_x), start_y(start_y), end_y(end_y) {}
+    render_chunk(unsigned int start_x, unsigned int end_x, unsigned int start_y, unsigned int end_y) : start_x(start_x), end_x(end_x), start_y(start_y), end_y(end_y) {}
 };
 
 void render(char img[], const int channels, const render_chunk &chunk, const render_data &data) {
@@ -122,7 +131,7 @@ void render(char img[], const int channels, const render_chunk &chunk, const ren
         for (int i = chunk.start_x; i < chunk.end_x; ++i) {
             color pixel_color(0);
             
-            for (uint s = 0; s < data.sample_per_pixel; ++s) {
+            for (unsigned int s = 0; s < data.sample_per_pixel; ++s) {
                 auto u = (i + random_double()) / (data.width - 1);
                 auto v = (j + random_double()) / (data.height - 1);
                 ray r = data.cam.get_ray(u, v);
@@ -189,30 +198,42 @@ int main(int, char**) {
         auto img_variations = std::make_unique<std::unique_ptr<char[]>[]>(thread_count);
         const render_data data(image_width, image_height, sample_per_pixel / thread_count, max_depth, cam, world);
             
-        for (uint i = 0; i < thread_count; ++i) {
+        for (unsigned int i = 0; i < thread_count; ++i) {
             img_variations[i] = std::make_unique<char[]>(pixels_channels_quantity);
             threads[i] = std::thread(render, img_variations[i].get(), channels, render_chunk(0, image_width, 0, image_height), std::ref(data));
         }
 
-        for (uint i = 0; i < thread_count; ++i) {
+        for (unsigned int i = 0; i < thread_count; ++i) {
             threads[i].join();
         }
 
         // Save intermediate
-        for (uint i = 0; i < thread_count; ++i) {
-            char filename[19] = "intermediate__.png";// + "1" + ".png";
+        for (unsigned int i = 0; i < thread_count; ++i) {
+            char filename[20] = "intermediate___.png";// + "1" + ".png";
             switch (i) {
-                case 0: filename[13] = '1'; break; 
-                case 1: filename[13] = '2'; break; 
-                case 2: filename[13] = '3'; break; 
-                case 3: filename[13] = '4'; break; 
+                case 0 : filename[13] = '0'; filename[14] = '1'; break; 
+                case 1 : filename[13] = '0'; filename[14] = '2'; break; 
+                case 2 : filename[13] = '0'; filename[14] = '3'; break; 
+                case 3 : filename[13] = '0'; filename[14] = '4'; break; 
+                case 4 : filename[13] = '0'; filename[14] = '5'; break; 
+                case 5 : filename[13] = '0'; filename[14] = '6'; break; 
+                case 6 : filename[13] = '0'; filename[14] = '7'; break; 
+                case 7 : filename[13] = '0'; filename[14] = '8'; break; 
+                case 8 : filename[13] = '0'; filename[14] = '9'; break; 
+                case 9 : filename[13] = '1'; filename[14] = '0'; break; 
+                case 10: filename[13] = '1'; filename[14] = '1'; break; 
+                case 11: filename[13] = '1'; filename[14] = '2'; break; 
+                case 12: filename[13] = '1'; filename[14] = '3'; break; 
+                case 13: filename[13] = '1'; filename[14] = '4'; break; 
+                case 14: filename[13] = '1'; filename[14] = '5'; break; 
+                case 15: filename[13] = '1'; filename[14] = '6'; break; 
             }
             stbi_write_png((const char *)filename, image_width, image_height, channels, img_variations[i].get(), image_width * channels);
         }
 
         for (int i = 0; i < pixels_channels_quantity; ++i) {
             double channel_value = 0.0;
-            for (uint j = 0; j < thread_count; ++j) {
+            for (unsigned int j = 0; j < thread_count; ++j) {
                 channel_value += img_variations[j][i];
             }
             img[i] = static_cast<char>(clamp(channel_value / thread_count, 0.0, 256.0));
