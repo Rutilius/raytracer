@@ -2,7 +2,9 @@
 #include "hittable.h"
 #include "rtweekend.h"
 
+#include <atomic>
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <iterator>
 #include <functional>
@@ -12,6 +14,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <chrono>
 #include <time.h>   
 
 #include "hittable_list.h"
@@ -24,7 +27,8 @@
 #include "stb/stb_image_write.h"
 
 using std::make_shared;
-
+using namespace std::chrono_literals;
+ 
 
 color ray_color(const ray &r, const hittable &world, int depth) {
     // If we've exceeded the ray bounce limit, no more light is gathered.
@@ -126,6 +130,8 @@ struct render_chunk {
     render_chunk(unsigned int start_x, unsigned int end_x, unsigned int start_y, unsigned int end_y) : start_x(start_x), end_x(end_x), start_y(start_y), end_y(end_y) {}
 };
 
+std::atomic<unsigned long> rows_progression(0);
+
 void render(char img[], const int channels, const render_chunk &chunk, const render_data &data) {
     for(int j = chunk.end_y - 1; j >= chunk.start_y; --j) {
         for (int i = chunk.start_x; i < chunk.end_x; ++i) {
@@ -141,7 +147,8 @@ void render(char img[], const int channels, const render_chunk &chunk, const ren
             auto start_color_index((j * channels * data.width) + i*channels);
             write_color(img, start_color_index, pixel_color, data.sample_per_pixel);
         }
-        std::cout << "Rendered line: " << j << ", column: [" << chunk.start_x << ", " << chunk.end_x << "]\n";
+        rows_progression.fetch_add(1);
+        // std::cout << "Rendered line: " << j << ", column: [" << chunk.start_x << ", " << chunk.end_x << "]\n";
     }
 }
 
@@ -156,6 +163,17 @@ static unsigned int hardware_concurrency() {
 
     auto hc = std::thread::hardware_concurrency();
     return hc ? hc : proc();
+}
+
+void show_progression(unsigned long total_rows) {
+    std::thread([total_rows]() {
+        do {
+            std::cout.precision(2);
+            std::cout.setf(std::ios::fixed, std::ios::floatfield);
+            std::cout << "\rProgression: " << ((double)rows_progression / total_rows) * 100 << "%" << std::flush;
+            std::this_thread::sleep_for(100ms);
+        } while (rows_progression < total_rows);
+    }).detach();
 }
 
 int main(int, char**) {
@@ -190,14 +208,16 @@ int main(int, char**) {
     stbi_flip_vertically_on_write(true);
     auto img = std::make_unique<char[]>(pixels_channels_quantity);
 
-    
+    rows_progression = 0;
 
     if(thread_count > 0) {
         // Multithread approach
         auto threads = std::make_unique<std::thread[]>(thread_count);
         auto img_variations = std::make_unique<std::unique_ptr<char[]>[]>(thread_count);
         const render_data data(image_width, image_height, sample_per_pixel / thread_count, max_depth, cam, world);
-            
+                    
+        show_progression(image_height * thread_count);
+
         for (unsigned int i = 0; i < thread_count; ++i) {
             img_variations[i] = std::make_unique<char[]>(pixels_channels_quantity);
             threads[i] = std::thread(render, img_variations[i].get(), channels, render_chunk(0, image_width, 0, image_height), std::ref(data));
@@ -242,6 +262,7 @@ int main(int, char**) {
     } else {
         // Singlethread approach
         const render_data data(image_width, image_height, sample_per_pixel, max_depth, cam, world);
+        show_progression(image_height);
         render(img.get(), channels, render_chunk(0, image_width, 0, image_height), data);
     }
 
