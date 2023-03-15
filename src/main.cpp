@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <iomanip>
 #include <iterator>
 #include <functional>
 #include <fstream>
@@ -15,7 +16,9 @@
 #include <thread>
 #include <vector>
 #include <chrono>
-#include <time.h>   
+#include <time.h>
+#include <sstream>
+#include <iomanip>   
 
 #include "hittable_list.h"
 #include "sphere.h"
@@ -132,7 +135,7 @@ struct render_chunk {
 
 std::atomic<unsigned long> rows_progression(0);
 
-void render(char img[], const int channels, const render_chunk &chunk, const render_data &data) {
+void render(unsigned char img[], const int channels, const render_chunk &chunk, const render_data &data) {
     for(int j = chunk.end_y - 1; j >= chunk.start_y; --j) {
         for (int i = chunk.start_x; i < chunk.end_x; ++i) {
             color pixel_color(0);
@@ -173,6 +176,7 @@ void show_progression(unsigned long total_rows) {
             std::cout << "\rProgression: " << ((double)rows_progression / total_rows) * 100 << "%" << std::flush;
             std::this_thread::sleep_for(100ms);
         } while (rows_progression < total_rows);
+        std::cout << "\rProgression: 100%" << std::flush;
     }).detach();
 }
 
@@ -206,20 +210,20 @@ int main(int, char**) {
     constexpr int channels = 3;
     constexpr int pixels_channels_quantity = image_width * image_height * channels;
     stbi_flip_vertically_on_write(true);
-    auto img = std::make_unique<char[]>(pixels_channels_quantity);
+    auto img = std::make_unique<unsigned char[]>(pixels_channels_quantity);
 
     rows_progression = 0;
 
     if(thread_count > 0) {
         // Multithread approach
         auto threads = std::make_unique<std::thread[]>(thread_count);
-        auto img_variations = std::make_unique<std::unique_ptr<char[]>[]>(thread_count);
+        auto img_variations = std::make_unique<std::unique_ptr<unsigned char[]>[]>(thread_count);
         const render_data data(image_width, image_height, sample_per_pixel / thread_count, max_depth, cam, world);
                     
         show_progression(image_height * thread_count);
 
         for (unsigned int i = 0; i < thread_count; ++i) {
-            img_variations[i] = std::make_unique<char[]>(pixels_channels_quantity);
+            img_variations[i] = std::make_unique<unsigned char[]>(pixels_channels_quantity);
             threads[i] = std::thread(render, img_variations[i].get(), channels, render_chunk(0, image_width, 0, image_height), std::ref(data));
         }
 
@@ -228,35 +232,28 @@ int main(int, char**) {
         }
 
         // Save intermediate
-        for (unsigned int i = 0; i < thread_count; ++i) {
-            char filename[20] = "intermediate___.png";// + "1" + ".png";
-            switch (i) {
-                case 0 : filename[13] = '0'; filename[14] = '1'; break; 
-                case 1 : filename[13] = '0'; filename[14] = '2'; break; 
-                case 2 : filename[13] = '0'; filename[14] = '3'; break; 
-                case 3 : filename[13] = '0'; filename[14] = '4'; break; 
-                case 4 : filename[13] = '0'; filename[14] = '5'; break; 
-                case 5 : filename[13] = '0'; filename[14] = '6'; break; 
-                case 6 : filename[13] = '0'; filename[14] = '7'; break; 
-                case 7 : filename[13] = '0'; filename[14] = '8'; break; 
-                case 8 : filename[13] = '0'; filename[14] = '9'; break; 
-                case 9 : filename[13] = '1'; filename[14] = '0'; break; 
-                case 10: filename[13] = '1'; filename[14] = '1'; break; 
-                case 11: filename[13] = '1'; filename[14] = '2'; break; 
-                case 12: filename[13] = '1'; filename[14] = '3'; break; 
-                case 13: filename[13] = '1'; filename[14] = '4'; break; 
-                case 14: filename[13] = '1'; filename[14] = '5'; break; 
-                case 15: filename[13] = '1'; filename[14] = '6'; break; 
+        {
+            const int thread_digits(floor(log10(thread_count) + 1)); 
+            for (unsigned int i = 0; i < thread_count; ++i) {
+                std::stringstream ss;
+                ss << "intermediate_" << std::setw(thread_digits) << std::setfill('0') << (i + 1) << ".png";
+                stbi_write_png((const char *)ss.str().c_str(), image_width, image_height, channels, img_variations[i].get(), image_width * channels);
             }
-            stbi_write_png((const char *)filename, image_width, image_height, channels, img_variations[i].get(), image_width * channels);
         }
 
-        for (int i = 0; i < pixels_channels_quantity; ++i) {
-            double channel_value = 0.0;
+        for (unsigned int i = 0; i < pixels_channels_quantity; ++i) {
+            unsigned int channel_value{0};
             for (unsigned int j = 0; j < thread_count; ++j) {
                 channel_value += img_variations[j][i];
             }
-            img[i] = static_cast<char>(clamp(channel_value / thread_count, 0.0, 256.0));
+            
+            unsigned int value = channel_value / thread_count;
+            value = value >= 0 ?
+                        value <= 255 ?
+                            value 
+                            : 255
+                        : 0; 
+            img[i] = static_cast<unsigned char>(value);
         }
 
     } else {
