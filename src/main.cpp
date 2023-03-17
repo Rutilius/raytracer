@@ -248,11 +248,7 @@ int main(int, char**) {
             }
             
             unsigned int value = channel_value / thread_count;
-            value = value >= 0 ?
-                        value <= 255 ?
-                            value 
-                            : 255
-                        : 0; 
+            value = clamp(value, 0U, 256U);
             img[i] = static_cast<unsigned char>(value);
         }
 

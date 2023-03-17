@@ -31,7 +31,8 @@ inline double random_double(double min, double max) {
     return min + (max - min)*random_double();
 }
 
-inline double clamp(double x, double min, double max) {
+template<typename T1>
+inline T1 clamp(T1 x, T1 min, T1 max) {
     if(x < min) { return min; }
     if(x > max) { return max; }
     return x; 
