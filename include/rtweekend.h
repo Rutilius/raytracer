@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <random>
 #include <cstdlib>
 #include <limits>
 #include <memory>
@@ -20,7 +21,10 @@ constexpr double degree_to_radians(double degrees) {
 }
 
 inline double random_double() {
-    return rand() / (RAND_MAX + 1.0);
+    thread_local std::random_device rd;
+    thread_local std::mt19937 rng(rd());  
+    thread_local std::uniform_int_distribution<int> uid;
+    return uid(rng, decltype(uid)::param_type{0, RAND_MAX}) / (RAND_MAX + 1.0);
 }
 
 inline double random_double(double min, double max) {

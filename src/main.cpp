@@ -181,7 +181,7 @@ void show_progression(unsigned long total_rows) {
 }
 
 int main(int, char**) {
-    srand(time(NULL));
+    //srand(time(NULL));
     const char *result_path = "result.png";
 
     // Image
