@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <ratio>
 #include <string>
 #include <thread>
 #include <vector>
@@ -176,13 +177,15 @@ void show_progression(unsigned long total_rows) {
             std::cout << "\rProgression: " << ((double)rows_progression / total_rows) * 100 << "%" << std::flush;
             std::this_thread::sleep_for(100ms);
         } while (rows_progression < total_rows);
-        std::cout << "\rProgression: 100%" << std::flush;
+        std::cout << "\rProgression: 100%        \n" << std::flush;
     }).detach();
 }
 
 int main(int, char**) {
     //srand(time(NULL));
     const char *result_path = "result.png";
+
+    const auto start = std::chrono::high_resolution_clock::now();
 
     // Image
     constexpr auto aspect_ratio = 3.0 / 2.0;
@@ -280,5 +283,14 @@ int main(int, char**) {
 
     stbi_write_png(result_path, image_width, image_height, channels, img.get(), image_width * channels);
     
-    std::cout << "\nDone!\n";
+    
+    const auto end = std::chrono::high_resolution_clock::now();
+    const auto diff = end - start;
+
+    const auto elapsed_milliseconds = std::chrono::duration_cast<std::chrono::minutes>(diff).count();
+    const auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(diff).count() % 60LL;
+    const auto elapsed_minutes = std::chrono::duration_cast<std::chrono::minutes>(diff).count();
+    const auto elapsed_hours = std::chrono::duration_cast<std::chrono::hours>(diff).count();
+
+    std::cout << "Done! in: " << elapsed_hours << ":" << elapsed_minutes << ":" << elapsed_seconds << "." << elapsed_milliseconds << " \n";
 }
