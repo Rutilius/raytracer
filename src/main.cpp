@@ -237,7 +237,7 @@ int main(int, char**) {
             for (unsigned int i = 0; i < thread_count; ++i) {
                 std::stringstream ss;
                 ss << "intermediate_" << std::setw(thread_digits) << std::setfill('0') << (i + 1) << ".png";
-                stbi_write_png((const char *)ss.str().c_str(), image_width, image_height, channels, img_variations[i].get(), image_width * channels);
+                stbi_write_png(ss.str().c_str(), image_width, image_height, channels, img_variations[i].get(), image_width * channels);
             }
         }
 
